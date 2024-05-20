@@ -9,7 +9,7 @@ $sql->execute();
 $resultado = $sql->fetchAll(PDO::FETCH_ASSOC);
 
 //print_r($_SESSION);
-session_destroy();
+//session_destroy();
 
 ?>
 <!doctype html>
@@ -65,7 +65,7 @@ session_destroy();
                     <a href="productos.php" class="btn btn-primary me-2">
                         Productos <id="num_cart" class="badge bg-secondary">
                     </a>
-                    <a href="carrito.php" class="btn btn-primary me-2">
+                    <a href="checkout.php" class="btn btn-primary me-2">
                         Carrito <span id="num_cart" class="badge bg-secondary">
                             <?php echo $num_cart; ?>
                         </span>

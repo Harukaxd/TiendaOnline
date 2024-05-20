@@ -1,4 +1,6 @@
 <?php
+define("CLIENT_ID", "AWwcJp16vy7VENVkJ4hfYVYhM-RUrSAiclSMTdSNQXvi5qqbvcPJ3SsM83sfDkl-tCSEYI7c_aRMu9Es");
+define("CURRENCY", "MXN");
 define("KEY_TOKEN", "APR.wqc-354*");
 define("MONEDA", "$");
 

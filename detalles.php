@@ -83,8 +83,8 @@ if ($id == '' || $token == '') {
                 </button>
                 <div class="collapse navbar-collapse" id="navbarHeader">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link active">Inicio</a>
+                    <li class="nav-item">
+                            <a href="index.php" class="nav-link active">Inicio</a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link active">Ropa</a>
@@ -96,7 +96,7 @@ if ($id == '' || $token == '') {
                             <a href> Nicolas Agudelo Gómez - ID: 695076</h2>
                         </li>
                     </ul>
-                    <a href="carrito.php" class="btn btn-primary">
+                    <a href="checkout.php" class="btn btn-primary">
                         Carrito <span id="num_cart" class="badge bg-secondary"><?php echo $num_cart; ?></span>
                     </a>
                     <a href="login.php" class="btn btn-primary">Inicio de sesión </a>
