@@ -8,58 +8,51 @@ function esNulo(array $parametros)
     }
     return false;
 }
+
 function esEmail($email)
 {
-    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return true;
-    }
-    return false;
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
+
 function validaPassword($password, $repassword)
 {
-    if (strcmp($password, $repassword) === 0) {
-        return true;
-    }
-    return false;
+    return strcmp($password, $repassword) === 0;
 }
+
 function generarToken()
 {
     return md5(uniqid(mt_rand(), false));
 }
-function resgistraCliente(array $datos, $con)
+
+function registraCliente(array $datos, $con)
 {
     $sql = $con->prepare("INSERT INTO cliente (Nombre_cliente, Apellido_cliente, Correo_cliente, Tel_cliente, Documento_cliente) VALUES (?,?,?,?,?)");
     if ($sql->execute($datos)) {
-        return $con->lastInsertID();
+        return $con->lastInsertId();
     }
     return 0;
 }
 
 function registraUsuario(array $datos, $con)
 {
+    $password_hash = password_hash($datos[1], PASSWORD_DEFAULT);
     $sql = $con->prepare("INSERT INTO usuario (usuario, password, Token, Id_cliente) VALUES (?,?,?,?)");
-    if ($sql->execute($datos)) {
-        return true;
-    }
-    return false;
+    return $sql->execute([$datos[0], $password_hash, $datos[2], $datos[3]]);
 }
+
+
 function usuarioExiste($usuario, $con)
 {
-    $sql = $con->prepare("SELECT id FROM usuario WHERE usuario LIKE ? LIMIT 1");
+    $sql = $con->prepare("SELECT Id_cliente FROM usuario WHERE usuario = ? LIMIT 1");
     $sql->execute([$usuario]);
-    if ($sql->fetchColumn() > 0) {
-        return true;
-    }
-    return false;
+    return $sql->fetchColumn() > 0;
 }
+
 function mailExiste($email, $con)
 {
-    $sql = $con->prepare("SELECT Cli_cod FROM cliente WHERE Correo_cliente LIKE ? LIMIT 1");
+    $sql = $con->prepare("SELECT Cli_cod FROM cliente WHERE Correo_cliente = ? LIMIT 1");
     $sql->execute([$email]);
-    if ($sql->fetchColumn() > 0) {
-        return true;
-    }
-    return false;
+    return $sql->fetchColumn() > 0;
 }
 
 function mostrarMensajes(array $errors)
@@ -69,35 +62,40 @@ function mostrarMensajes(array $errors)
         foreach ($errors as $error) {
             echo '<li>' . $error . '</li>';
         }
-        echo '<ul>';
+        echo '</ul>';
         echo '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
     }
 }
 function login($usuario, $password, $con)
 {
-    $sql = $con->prepare("SELECT id, usuario, password FROM usuario WHERE Usuario LIKE ? LIMIT 1");
+    $sql = $con->prepare("SELECT id, usuario, password FROM usuario WHERE usuario = ? LIMIT 1");
     $sql->execute([$usuario]);
     if ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
         if (esActivo($usuario, $con)) {
+            var_dump($password); 
+            var_dump($row['password']); 
             if (password_verify($password, $row['password'])) {
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['user_name'] = $row['usuario'];
                 header("Location: index.php");
                 exit;
+            } else {
+                return header("Location: index.php");
             }
         } else {
-            return 'El usuario no ha sido activado ';
+            return 'El usuario no ha sido activado.';
         }
+    } else {
+        return 'El usuario no existe';
     }
 }
 
+
 function esActivo($usuario, $con)
 {
-    $sql = $con->prepare("SELECT Activación FROM usuario WHERE usuario LIKE ? LIMIT 1");
+    $sql = $con->prepare("SELECT Activación FROM usuario WHERE usuario = ? LIMIT 1");
     $sql->execute([$usuario]);
     $row = $sql->fetch(PDO::FETCH_ASSOC);
-    if ($row['Activación'] == 0) {
-        return true;
-    }
-    return false;
+    return $row && $row['Activación'] == 1;
 }
+?>

@@ -7,19 +7,18 @@ $db = new Database();
 $con = $db->conectar();
 
 $errors = [];
+
 if (!empty($_POST)) {
     $usuario = trim($_POST['usuario']);
     $password = trim($_POST['password']);
 
     if (esNulo([$usuario, $password])) {
-        $errors[] = "Debe llenar todo los campos ";
+        $errors[] = "Debe llenar todos los campos.";
     }
     if (count($errors) == 0) {
         $errors[] = login($usuario, $password, $con);
     }
 }
-print_r($_SESSION);
-//session_destroy();
 
 ?>
 <!doctype html>
@@ -83,6 +82,8 @@ print_r($_SESSION);
                         </a>
                     <?php } ?>
                 </div>
+            </div>
+        </div>
     </header>
     <main class="form-login m-auto pt-4">
         <h2>Iniciar sesión</h2>
@@ -97,15 +98,12 @@ print_r($_SESSION);
                     required>
                 <label for="password">Contraseña</label>
             </div>
-            <div class="col-12">
-                <a href="recupera.php">¿Olvidate tu contraseña?</a>
-            </div>
             <div class="d-grid gap-3 col-12">
                 <button type="submit" class="btn btn-primary">Ingresar</button>
             </div>
             <hr>
-            <div>
-                ¿No tiene cuenta? <a href="registro.php">Registrate aquí </a>
+            <div class="col-12">
+                ¿No tiene cuenta? <a href="registro.php">Regístrate aquí </a>
             </div>
         </form>
     </main>

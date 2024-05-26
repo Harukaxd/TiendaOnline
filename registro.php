@@ -21,37 +21,40 @@ if (!empty($_POST)) {
         $errors[] = "Debe llenar todo los campos ";
     }
 
-    if (esEmail($email)) {
+    if (!esEmail($email)) {
         $errors[] = "La dirección de correo no es valida ";
     }
-    if (validaPassword($password, $repassword)) {
+
+    if (!validaPassword($password, $repassword)) {
         $errors[] = "Las contraseñas no coinciden ";
     }
+
     if (usuarioExiste($usuario, $con)) {
         $errors[] = "El nombre de usuario $usuario ya existe ";
     }
+
     if (mailExiste($email, $con)) {
         $errors[] = "El correo $email ya esta registrado ";
     }
 
-
-    $id = resgistraCliente([$nombres, $apellidos, $email, $telefono, $documento], $con);
+    $id = registraCliente([$nombres, $apellidos, $email, $telefono, $documento], $con);
     if ($id > 0) {
         $pass_hash = password_hash($password, PASSWORD_DEFAULT);
         $token = generarToken();
-        if (registraUsuario([$usuario, $password, $token, $id], $con)) {
+        if (!registraUsuario([$usuario, $pass_hash, $token, $id], $con)) {
             $errors[] = 'Error al registrar este cliente ';
         }
     } else {
         $errors[] = 'Error al registrar este cliente ';
     }
-    if( count($errors) == 0) {
-    }else{
+
+    if (count($errors) == 0) {
+        header("Location: login.php");
+        exit;
+    } else {
         print_r($errors);
     }
 }
-print_r($_SESSION);
-//session_destroy();
 
 ?>
 <!doctype html>
@@ -134,7 +137,7 @@ print_r($_SESSION);
                 </div>
                 <div class="col-md-6">
                     <label for="email"><span class="text-danger">*</span>Correo electronico</label>
-                    <input type="email" name="email" id="email" class="form-control" requireda>
+                    <input type="email" name="email" id="email" class="form-control" required>
                     <span id="validaEmail" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
@@ -148,8 +151,7 @@ print_r($_SESSION);
                 <div class="col-md-6">
                     <label for="usuario"><span class="text-danger">*</span>Usuario</label>
                     <span id="validaUsuario" class="text-danger"></span>
-                    <input type="text" name="usuario" id="usuario" class="form-control" requireda>
-
+                    <input type="text" name="usuario" id="usuario" class="form-control" required>
                 </div>
                 <div class="col-md-6">
                     <label for="password"><span class="text-danger">*</span>Contraseña</label>
@@ -170,56 +172,55 @@ print_r($_SESSION);
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
         </script>
     <script>
-        let txtEmail = document.getElementById('email')
+        let txtEmail = document.getElementById('email');
         txtEmail.addEventListener("blur", function () {
-            existeEmail(txtEmail.value)
-        }, false)
+            existeEmail(txtEmail.value);
+        }, false);
 
         function existeEmail(email) {
-            let url = "clases/cliente.php"
-            let formData = new FormData()
-            formData.append("action", "existeEmail")
-            formData.append("email", email)
+            let url = "clases/cliente.php";
+            let formData = new FormData();
+            formData.append("action", "existeEmail");
+            formData.append("email", email);
 
             fetch(url, {
                 method: 'POST',
                 body: formData
-            }).then(Response => response.json())
+            }).then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        document.getElementById('email').value = ''
-                        document.getElementById('validaEmail').innerHTML = 'Email no disponible'
+                        document.getElementById('email').value = '';
+                        document.getElementById('validaEmail').innerHTML = 'Email no disponible';
                     } else {
-                        document.getElementById('validaEmail').innerHTML = ''
+                        document.getElementById('validaEmail').innerHTML = '';
                     }
-                })
+                });
         }
 
-        let txtUsuario = document.getElementById('usuario')
+        let txtUsuario = document.getElementById('usuario');
         txtUsuario.addEventListener("blur", function () {
-            existeUsuario(txtUsuario.value)
-        }, false)
+            existeUsuario(txtUsuario.value);
+        }, false);
 
         function existeUsuario(usuario) {
-            let url = "clases/cliente.php"
-            let formData = new FormData()
-            formData.append("action", "existeUsuario")
-            formData.append("usuario", usuario)
+            let url = "clases/cliente.php";
+            let formData = new FormData();
+            formData.append("action", "existeUsuario");
+            formData.append("usuario", usuario);
 
             fetch(url, {
                 method: 'POST',
                 body: formData
-            }).then(Response => response.json())
+            }).then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        document.getElementById('usuario').value = ''
-                        document.getElementById('validaUsuario').innerHTML = 'Usuario no disponible'
+                        document.getElementById('usuario').value = '';
+                        document.getElementById('validaUsuario').innerHTML = 'Usuario no disponible';
                     } else {
-                        document.getElementById('validaUsuario').innerHTML = ''
+                        document.getElementById('validaUsuario').innerHTML = '';
                     }
-                })
-    }
-
+                });
+        }
     </script>
 </body>
 
